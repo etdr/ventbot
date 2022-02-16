@@ -8,13 +8,22 @@
   },
   "author": "Eli T. Drumm",
   "license": "GPL-3.0-or-later",
+  "type": "module",
   "dependencies": {
+    "@twurple/api": "^5.0.17",
+    "@twurple/auth": "^5.0.17",
+    "@twurple/eventsub": "^5.0.17",
     "bufferutil": "^4.0.6",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0",
     "erlpack": "^0.1.4",
+    "node-fetch": "^3.2.0",
+    "sequelize": "^6.16.1",
     "sqlite3": "^5.0.2",
     "utf-8-validate": "^5.0.8",
     "zlib-sync": "^0.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
   }
 }

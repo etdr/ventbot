@@ -1,18 +1,52 @@
 import 'dotenv/config'
-const ids = {
-  APPID: process.env.APPID,
-  PUBKEY: process.env.PUBKEY,
-  PERMISSIONS: process.env.PERMISSIONS,
-  TOKEN: process.env.TOKEN
-}
+import { Client, Intents } from 'discord.js'
 
-import sqlite3 from 'sqlite3'
+const intents = new Intents()
+intents.add(
+  Intents.FLAGS.GUILDS,
+  Intents.FLAGS.GUILD_MESSAGES,
+  Intents.FLAGS.GUILD_SCHEDULED_EVENTS
+)
+
+const cl = new Client({ intents })
+cl.once('ready', c => console.log(`ready as ${c.user.tag}`))
+cl.on('error', c => console.error(`error: ${c.error}`))
+
+cl.on('guildScheduledEventUpdate', (oldEv, ev) => {
+  console.log('old', oldEv)
+  console.log('updated', ev)
+  if (oldEv.status === 'SCHEDULED' && ev.status === 'ACTIVE') {
+    // stream/event start
+
+  }
+  if (oldEv.status === 'ACTIVE' && ev.status === 'ACTIVE') {
+    // info has changed while stream/event is ongoing
+    
+  }
+})
+
+cl.on('guildScheduledEventCreate', async ev => {
+  await durr.scheduledEvents.fetch({ cache: true })
+})
+
+cl.on('guildScheduledEventDelete', async dev => {
+  await durr.scheduledEvents.fetch({ cache: true })
+})
+
+await cl.login(process.env.TOKEN)
 
 
-import { Client, Intents } from "discord.js"
+const guilds = [ ...cl.guilds.cache.values() ]
 
-const cl = new Client({ intents: [Intents.FLAGS.GUILDS] })
+const durr = guilds[0]
 
-cl.login(ids.TOKEN)
+const channels = durr.channels.cache
+
+const schevents = durr.scheduledEvents.cache
+
+const notifyChannel = channels.find(chan => chan.name === 'ventbot-test')
+//const notifyChannelId = notifyChannel.id
+
+
 
 
