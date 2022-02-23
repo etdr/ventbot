@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "broadcaster_type": "affiliate",
+      "created_at": "2021-02-04T15:38:06Z",
+      "description": "Hi, I'm undead! I mainly play Splatoon and Animal Crossing but you might persuade me to stream something else every once in a while. I make YouTube videos when I can be bothered. ",
+      "display_name": "undeadisntdead",
+      "id": "645830215",
+      "login": "undeadisntdead",
+      "offline_image_url": "",
+      "profile_image_url": "https://static-cdn.jtvnw.net/jtv_user_pictures/1d46f6a3-85e2-4d94-a0d2-b939ee474e9e-profile_image-300x300.png",
+      "type": "",
+      "view_count": 10087
+    }
+  ]
+}
