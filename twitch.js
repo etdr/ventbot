@@ -21,8 +21,7 @@ export async function getTwUserId (twName) {
 const listener = new EventSubListener({
   apiClient: api,
   adapter: new ReverseProxyAdapter({
-    hostName: 'computer.navy',
-    pathPrefix: 'ventsub',
+    hostName: 'ventbot.computer.navy',
     port: process.env.ADAPTER_PORT
   }),
   secret: process.env.VENTSUB_SECRET
