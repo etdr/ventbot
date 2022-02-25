@@ -122,6 +122,7 @@ async function twStartFunc (e) {
   if (fses.size > 0) {
     const firstUp = fses.first()
     firstUp.setStatus('ACTIVE')
+    
   }
 
   nC = cl.channels.cache.get(data.notifyChannelId)
@@ -147,6 +148,7 @@ async function twEndFunc (e) {
 
 
 cl.on('ready', async c => {
+  c.actives = {}
   c.twSubs = {}
   for (let g of await c.guilds.fetch()) {
     const gData = await GCs.findOne({
