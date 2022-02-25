@@ -21,20 +21,21 @@ export async function getTwUserId (twName) {
 const listener = new EventSubListener({
   apiClient: api,
   adapter: new ReverseProxyAdapter({
-    hostName: 'acoma.tools',
+    hostName: 'computer.navy',
     pathPrefix: 'ventsub',
-    port: 22200
+    port: process.env.ADAPTER_PORT
   }),
-  secret: 'dvmo5ufpnmqHyadmbVvaFXdLpwFKYoPdv2H6PzmMogUURNHfqyAKcG97FqD5'
+  secret: process.env.VENTSUB_SECRET
 })
 
 await listener.listen()
 
-export async function getTwStreamSubs (dscUserId, funcs) {
+export async function getTwStreamSubs (twUserId, funcs) {
   try {
-    const twUserId = (await GuildConfigs.findOne({
-      where: { ownerId: dscUserId }
-    })).id
+    console.log(`getting twitch subscriptions for ${twUserId}`)
+    // const twUserId = (await GuildConfigs.findOne({
+    //   where: { ownerId: dscUserId }
+    // })).id
     return {
       startSub: await listener.subscribeToStreamOnlineEvents(
         twUserId,
@@ -49,5 +50,6 @@ export async function getTwStreamSubs (dscUserId, funcs) {
     console.error(e)
   }
 }
+
 
 export default listener

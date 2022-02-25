@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { Client, Intents, MessageActionRow, MessageSelectMenu } from 'discord.js'
+import { compareAsc, isAfter, subMinutes } from 'date-fns'
 
 import { GuildConfigs as GCs } from './db.js'
 import { getTwUserId, getTwStreamSubs } from './twitch.js'
@@ -9,10 +10,14 @@ intents.add(
   Intents.FLAGS.GUILDS,
   Intents.FLAGS.GUILD_MEMBERS,
   Intents.FLAGS.GUILD_MESSAGES,
-  Intents.FLAGS.GUILD_SCHEDULED_EVENTS
+  Intents.FLAGS.GUILD_SCHEDULED_EVENTS,
+  Intents.FLAGS.DIRECT_MESSAGES
 )
 
-const cl = new Client({ intents })
+const cl = new Client({
+  intents,
+  allowedMentions: { parse: ['everyone'] }
+})
 cl.once('ready', c => console.log(`ready as ${c.user.tag}`))
 cl.on('error', c => console.error(`error: ${c.error}`))
 
@@ -67,9 +72,19 @@ cl.on('interactionCreate', async i => {
   })
   const selNCResponse = await selNCMessage.awaitMessageComponent()
 
-  const twNameMsg = await selNCMessage.reply( )
+  await selNCResponse.reply({
+    content: 'Cool!'
+  })
 
-  const twUserId = await getTwUserId()
+  await owchan.send({
+    content: 'And what\'s your Twitch username?'
+  })
+
+  const twNameResp = await owchan.awaitMessages({ max: 1 })
+
+  const twUserName = twNameResp.first().content
+
+  const twUserId = await getTwUserId(twUserName)
 
   await GCs.create({
     guildId: g.id,
@@ -83,7 +98,72 @@ cl.on('interactionCreate', async i => {
   //   components: []
   // })
 
+  owchan.send('Ok, you\'re all set!')
 })
+
+
+
+async function twStartFunc (e) {
+  console.log('stream start detected')
+  console.log(e)
+  const data = await GCs.findOne({
+    where: { twitchId: e.broadcaster_user_id }
+  })
+  const g = cl.guilds.cache.get(data.guildId)
+  const ses = await g.scheduledEvents.fetch()
+  const fses = ses.sort((se0, se1) => compareAsc(
+    se0.scheduledStartAt,
+    se1.scheduledStartAt
+  )).filter(se => isAfter(
+    se.scheduledStartAt,
+    subMinutes(new Date(), 30)
+  ))
+  
+  if (fses.size > 0) {
+    const firstUp = fses.first()
+    firstUp.setStatus('ACTIVE')
+  }
+
+  nC = cl.channels.cache.get(data.notifyChannelId)
+  everyoneId = g.roles.everyone.id
+  username = cl.users.cache.get(data.ownerId).username
+  
+  nC.send({
+    content: `Hey <@${everyoneId}>! ${username} is streaming.`
+  })
+
+}
+
+async function twEndFunc (e) {
+
+}
+
+
+
+// async function twitchListen (twId) {
+
+// }
+
+
+
+cl.on('ready', async c => {
+  c.twSubs = {}
+  for (let g of await c.guilds.fetch()) {
+    const gData = await GCs.findOne({
+      where: { guildId: g[0] }
+    })
+    c.twSubs[gData.ownerId] = await getTwStreamSubs(
+      gData.twitchId,
+      { startFunc: twStartFunc, endFunc: twEndFunc }  
+    )
+  }
+})
+
+
+
+
+
+
 
 
 
